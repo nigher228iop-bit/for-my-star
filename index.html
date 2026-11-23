@@ -2,8 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💖 Для тебя</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>💖</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&display=swap');
 
@@ -20,6 +20,132 @@
             position: relative;
         }
 
+        /* ===== PIN SCREEN ===== */
+        #pin-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s, transform 0.8s;
+        }
+
+        #pin-screen.unlocked {
+            opacity: 0;
+            transform: scale(1.1);
+            pointer-events: none;
+        }
+
+        .pin-title {
+            color: #ff69b4;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .pin-heart {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .pin-dots {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 2rem;
+        }
+
+        .pin-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 105, 180, 0.5);
+            background: transparent;
+            transition: all 0.2s;
+        }
+
+        .pin-dot.filled {
+            background: #ff69b4;
+            border-color: #ff69b4;
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.6);
+        }
+
+        .pin-dot.error {
+            border-color: #ff4444;
+            background: #ff4444;
+            animation: shake 0.4s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-8px); }
+            40% { transform: translateX(8px); }
+            60% { transform: translateX(-6px); }
+            80% { transform: translateX(6px); }
+        }
+
+        .pin-keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 72px);
+            gap: 14px;
+        }
+
+        .pin-key {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255, 105, 180, 0.3);
+            background: rgba(255, 105, 180, 0.08);
+            color: #fff;
+            font-size: 1.6rem;
+            font-family: 'Comfortaa', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        .pin-key:active {
+            background: rgba(255, 105, 180, 0.3);
+            border-color: #ff69b4;
+            transform: scale(0.93);
+        }
+
+        .pin-key.empty {
+            visibility: hidden;
+        }
+
+        .pin-key.backspace {
+            font-size: 1.2rem;
+        }
+
+        .pin-hint {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .pin-error-msg {
+            color: #ff6b8a;
+            font-size: 0.85rem;
+            margin-top: 0.8rem;
+            height: 1.2rem;
+            transition: opacity 0.3s;
+        }
+
+        /* ===== MAIN CONTENT ===== */
         .container {
             text-align: center;
             z-index: 10;
@@ -59,23 +185,11 @@
         }
 
         @keyframes fall {
-            0% {
-                opacity: 0;
-                transform: translateY(0) rotate(0deg) scale(0.5);
-            }
-            10% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.8;
-            }
-            90% {
-                opacity: 0.3;
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(110vh) rotate(720deg) scale(0.3);
-            }
+            0% { opacity: 0; transform: translateY(0) rotate(0deg) scale(0.5); }
+            10% { opacity: 1; }
+            50% { opacity: 0.8; }
+            90% { opacity: 0.3; }
+            100% { opacity: 0; transform: translateY(110vh) rotate(720deg) scale(0.3); }
         }
 
         .glow {
@@ -102,56 +216,144 @@
         @media (max-width: 600px) {
             h1 { font-size: 1.8rem; }
             p { font-size: 1rem; }
+            .pin-key { width: 64px; height: 64px; font-size: 1.4rem; }
+            .pin-keypad { grid-template-columns: repeat(3, 64px); gap: 12px; }
         }
     </style>
 </head>
 <body>
+
+    <!-- PIN SCREEN -->
+    <div id="pin-screen">
+        <div class="pin-heart">💗</div>
+        <div class="pin-title">Введи пин-код</div>
+        <div class="pin-dots" id="pin-dots">
+            <div class="pin-dot"></div>
+            <div class="pin-dot"></div>
+            <div class="pin-dot"></div>
+            <div class="pin-dot"></div>
+        </div>
+        <div class="pin-error-msg" id="pin-error">&nbsp;</div>
+        <div class="pin-keypad" id="pin-keypad">
+            <div class="pin-key" data-num="1">1</div>
+            <div class="pin-key" data-num="2">2</div>
+            <div class="pin-key" data-num="3">3</div>
+            <div class="pin-key" data-num="4">4</div>
+            <div class="pin-key" data-num="5">5</div>
+            <div class="pin-key" data-num="6">6</div>
+            <div class="pin-key" data-num="7">7</div>
+            <div class="pin-key" data-num="8">8</div>
+            <div class="pin-key" data-num="9">9</div>
+            <div class="pin-key empty"></div>
+            <div class="pin-key" data-num="0">0</div>
+            <div class="pin-key backspace" id="pin-back">⌫</div>
+        </div>
+        <div class="pin-hint">только для тебя 💕</div>
+    </div>
+
+    <!-- MAIN SITE -->
     <div class="glow glow-1"></div>
     <div class="glow glow-2"></div>
     <div class="glow glow-3"></div>
-
     <div class="hearts-container" id="hearts"></div>
-
     <div class="container">
         <h1>Дашенька 💗</h1>
         <p>Скоро тут будет кое-что особенное для тебя...</p>
     </div>
 
     <script>
-        const heartsContainer = document.getElementById('hearts');
-        const heartSymbols = ['💗', '💕', '💓'];
-        const colors = ['#ff69b4', '#ff1493', '#db7093', '#ffb6c1', '#ff85a2', '#ffc0cb', '#f8a4c8', '#e791b8'];
+        (function() {
+            var correctPin = '1909';
+            var entered = '';
+            var dots = document.querySelectorAll('.pin-dot');
+            var pinScreen = document.getElementById('pin-screen');
+            var pinError = document.getElementById('pin-error');
+            var heartsStarted = false;
 
-        function createHeart() {
-            const heart = document.createElement('div');
-            heart.classList.add('heart');
+            document.getElementById('pin-keypad').addEventListener('click', function(e) {
+                var key = e.target.closest('.pin-key');
+                if (!key) return;
+                var num = key.getAttribute('data-num');
+                if (key.id === 'pin-back') {
+                    if (entered.length > 0) {
+                        entered = entered.slice(0, -1);
+                        updateDots();
+                        pinError.innerHTML = '&nbsp;';
+                    }
+                    return;
+                }
+                if (num === null || entered.length >= 4) return;
+                entered += num;
+                updateDots();
+                if (entered.length === 4) {
+                    setTimeout(checkPin, 200);
+                }
+            });
 
-            const useEmoji = Math.random() > 0.4;
+            document.addEventListener('keydown', function(e) {
+                if (pinScreen.classList.contains('unlocked')) return;
+                if (e.key >= '0' && e.key <= '9' && entered.length < 4) {
+                    entered += e.key;
+                    updateDots();
+                    if (entered.length === 4) setTimeout(checkPin, 200);
+                } else if (e.key === 'Backspace' && entered.length > 0) {
+                    entered = entered.slice(0, -1);
+                    updateDots();
+                    pinError.innerHTML = '&nbsp;';
+                }
+            });
 
-            if (useEmoji) {
-                heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
-                heart.style.fontSize = (Math.random() * 20 + 14) + 'px';
-            } else {
-                const size = Math.random() * 16 + 10;
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                heart.innerHTML = '<svg viewBox="0 0 24 24" width="' + size + '" height="' + size + '" fill="' + color + '"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
-                heart.style.opacity = String(Math.random() * 0.5 + 0.3);
+            function updateDots() {
+                for (var i = 0; i < 4; i++) {
+                    dots[i].className = 'pin-dot' + (i < entered.length ? ' filled' : '');
+                }
             }
 
-            heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.animationDuration = (Math.random() * 4 + 4) + 's';
-            heart.style.animationDelay = (Math.random() * 0.5) + 's';
+            function checkPin() {
+                if (entered === correctPin) {
+                    pinScreen.classList.add('unlocked');
+                    setTimeout(function() { pinScreen.style.display = 'none'; }, 900);
+                    if (!heartsStarted) { startHearts(); heartsStarted = true; }
+                } else {
+                    for (var i = 0; i < 4; i++) dots[i].classList.add('error');
+                    pinError.textContent = 'Неправильный пин 💔';
+                    setTimeout(function() {
+                        entered = '';
+                        updateDots();
+                        for (var i = 0; i < 4; i++) dots[i].classList.remove('error');
+                    }, 600);
+                }
+            }
 
-            heartsContainer.appendChild(heart);
+            // Hearts
+            var heartsContainer = document.getElementById('hearts');
+            var heartSymbols = ['\u{1F497}', '\u{1F495}', '\u{1F493}'];
+            var pinkColors = ['#ff69b4', '#ff1493', '#db7093', '#ffb6c1', '#ff85a2', '#ffc0cb', '#f8a4c8', '#e791b8'];
 
-            setTimeout(function() { heart.remove(); }, 9000);
-        }
+            function createHeart() {
+                var heart = document.createElement('div');
+                heart.classList.add('heart');
+                if (Math.random() > 0.4) {
+                    heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                    heart.style.fontSize = (Math.random() * 20 + 14) + 'px';
+                } else {
+                    var size = Math.random() * 16 + 10;
+                    var color = pinkColors[Math.floor(Math.random() * pinkColors.length)];
+                    heart.innerHTML = '<svg viewBox="0 0 24 24" width="' + size + '" height="' + size + '" fill="' + color + '"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+                    heart.style.opacity = String(Math.random() * 0.5 + 0.3);
+                }
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                heart.style.animationDelay = (Math.random() * 0.5) + 's';
+                heartsContainer.appendChild(heart);
+                setTimeout(function() { heart.remove(); }, 9000);
+            }
 
-        for (var i = 0; i < 15; i++) {
-            setTimeout(createHeart, Math.random() * 2000);
-        }
-
-        setInterval(createHeart, 300);
+            function startHearts() {
+                for (var i = 0; i < 15; i++) setTimeout(createHeart, Math.random() * 2000);
+                setInterval(createHeart, 300);
+            }
+        })();
     </script>
 </body>
 </html>
