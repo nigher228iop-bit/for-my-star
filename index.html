@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>💖</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Nunito:wght@700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Nunito:wght@700;800;900&family=Caveat:wght@600;700&display=swap');
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -398,39 +398,140 @@
         .photos {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 14px;
+            gap: 22px 14px;
+            padding-top: 6px;
         }
 
         .polaroid {
+            position: relative;
             background: #fff;
             border: 2.5px solid var(--ink);
             border-radius: 14px;
-            padding: 8px 8px 6px;
+            padding: 8px 8px 4px;
             box-shadow: 3px 4px 0 rgba(90, 31, 46, 0.2);
             transform: rotate(-2deg);
+            cursor: pointer;
+            transition: transform 0.2s;
         }
 
-        .polaroid:nth-child(even) { transform: rotate(2deg); }
+        .polaroid:nth-child(even) { transform: rotate(2.2deg); }
+        .polaroid:active { transform: rotate(0) scale(0.96); }
 
-        .polaroid .ph {
-            aspect-ratio: 1;
+        .polaroid img {
+            display: block;
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            object-fit: cover;
             border-radius: 8px;
             background: #ffe4ec;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--rose-light);
         }
-
-        .polaroid .ph svg { width: 36px; height: 36px; }
 
         .polaroid span {
             display: block;
             text-align: center;
-            font-size: 0.8rem;
-            color: #9a5a6a;
-            padding-top: 6px;
+            font-family: 'Caveat', cursive;
+            font-weight: 700;
+            font-size: 1.2rem;
+            line-height: 1.15;
+            color: var(--ink);
+            padding: 6px 2px 2px;
         }
+
+        .polaroid.featured {
+            transform: rotate(-1.5deg);
+            margin: 14px 4px 26px;
+            padding: 10px 10px 6px;
+        }
+
+        .polaroid.featured img { aspect-ratio: 1; }
+        .polaroid.featured span { font-size: 1.6rem; }
+
+        .tape {
+            position: absolute;
+            top: -11px;
+            left: 50%;
+            width: 74px;
+            height: 22px;
+            margin-left: -37px;
+            transform: rotate(-4deg);
+            background: rgba(255, 158, 186, 0.75) repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.35) 0 4px, transparent 4px 8px);
+            border-radius: 3px;
+            box-shadow: 0 1px 2px rgba(90, 31, 46, 0.15);
+        }
+
+        .polaroid:nth-child(even) .tape { transform: rotate(5deg); }
+
+        .page.active .polaroid { animation: dropIn 0.5s ease both; }
+
+        @keyframes dropIn {
+            from { opacity: 0; translate: 0 16px; }
+            to { opacity: 1; translate: 0 0; }
+        }
+
+        /* lightbox */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: calc(env(safe-area-inset-top) + 60px) 16px calc(env(safe-area-inset-bottom) + 30px);
+            background: rgba(70, 18, 36, 0.92);
+            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+
+        .lightbox.show { opacity: 1; pointer-events: auto; }
+
+        .lightbox img {
+            max-width: 100%;
+            max-height: 68vh;
+            max-height: 68dvh;
+            object-fit: contain;
+            border: 5px solid #fff;
+            border-radius: 14px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            transition: opacity 0.2s;
+        }
+
+        .lb-cap {
+            font-family: 'Caveat', cursive;
+            font-weight: 700;
+            font-size: 1.7rem;
+            color: #fff;
+            text-align: center;
+        }
+
+        .lb-count { color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; }
+
+        .lb-btn {
+            position: absolute;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            border: 2.5px solid var(--ink);
+            background: var(--cream);
+            color: var(--ink);
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: 1.5rem;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 3px 0 var(--ink);
+        }
+
+        .lb-close { top: calc(env(safe-area-inset-top) + 12px); right: 14px; }
+        .lb-prev { left: 10px; top: 50%; margin-top: -23px; }
+        .lb-next { right: 10px; top: 50%; margin-top: -23px; }
 
         /* letter */
         .envelope {
@@ -674,7 +775,7 @@
                 <rect x="8" y="30" width="48" height="38" rx="11" fill="#e46b84" stroke="#5a1f2e" stroke-width="3"/>
                 <path transform="translate(20 37)" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#fffaf7"/>
             </svg>
-            <div class="pin-title">Введи код</div>
+            <div class="pin-title">Ввиди кодик</div>
             <div class="pin-boxes" id="pin-boxes"></div>
             <div class="pin-hint" id="pin-hint">Какая та дата связанная с нами, бебебе</div>
             <div class="pin-keypad" id="pin-keypad">
@@ -720,68 +821,78 @@
         <main class="pages" id="pages">
             <section class="page active" data-page="home">
                 <div class="page-title">Дашенька 💗</div>
-                <p class="page-sub">это всё для тебя</p>
+                <p class="page-sub">эта фсё для тибя</p>
                 <div class="card hero">
                     <div class="date-badge">19.09</div>
-                    <h3>Наш день</h3>
-                    <p>С этого дня всё и началось 💕</p>
+                    <h3>Наш денёчик</h3>
+                    <p>с ево фсё и началась 💕</p>
                 </div>
                 <div class="card">
-                    <h3>Привет, люпимасть</h3>
-                    <p class="muted">Тут скоро будет кое-что особенное...</p>
+                    <h3>Превет, люпимасть</h3>
+                    <p class="muted">тут скора будит коешто асобинае...</p>
                 </div>
                 <div class="card">
-                    <p>Листай вкладки внизу 👇</p>
+                    <p>листай фкладачки внизу 👇 ну листай листай</p>
                 </div>
             </section>
 
             <section class="page" data-page="photos">
-                <div class="page-title">Наши фотки 📸</div>
-                <p class="page-sub">наши моменты</p>
+                <div class="page-title">Нашы фотачки 📸</div>
+                <p class="page-sub">тыкни на фотачьку штобы увиличить</p>
+                <figure class="polaroid featured" data-photo><div class="tape"></div><img src="photos/us.jpg" alt="" decoding="async"><span>мы!! самыи лутшие 💜</span></figure>
                 <div class="photos">
-                    <div class="polaroid"><div class="ph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg></div><span>скоро тут фотка</span></div>
-                    <div class="polaroid"><div class="ph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg></div><span>скоро тут фотка</span></div>
-                    <div class="polaroid"><div class="ph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg></div><span>скоро тут фотка</span></div>
-                    <div class="polaroid"><div class="ph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg></div><span>скоро тут фотка</span></div>
-                    <div class="polaroid"><div class="ph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg></div><span>скоро тут фотка</span></div>
-                    <div class="polaroid"><div class="ph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg></div><span>скоро тут фотка</span></div>
+                    <figure class="polaroid" data-photo style="animation-delay:80ms"><div class="tape"></div><img src="photos/dasha-1.jpg" alt="" loading="lazy" decoding="async" style="object-position:35% 25%"><span>ты ф ачьках 🤓 ну просто вааще</span></figure>
+                    <figure class="polaroid" data-photo style="animation-delay:150ms"><div class="tape"></div><img src="photos/me-2.jpg" alt="" loading="lazy" decoding="async" style="object-position:50% 40%"><span>я и катеночик 🐈‍⬛</span></figure>
+                    <figure class="polaroid" data-photo style="animation-delay:220ms"><div class="tape"></div><img src="photos/dasha-3.jpg" alt="" loading="lazy" decoding="async" style="object-position:65% 20%"><span>палосатая Дашуля 🦓</span></figure>
+                    <figure class="polaroid" data-photo style="animation-delay:290ms"><div class="tape"></div><img src="photos/me-3.jpg" alt="" loading="lazy" decoding="async" style="object-position:50% 45%"><span>я стисняюсь 🙈</span></figure>
+                    <figure class="polaroid" data-photo style="animation-delay:360ms"><div class="tape"></div><img src="photos/dasha-2.jpg" alt="" loading="lazy" decoding="async" style="object-position:70% 30%"><span>ночная красотуля 🌙</span></figure>
+                    <figure class="polaroid" data-photo style="animation-delay:430ms"><div class="tape"></div><img src="photos/me-1.jpg" alt="" loading="lazy" decoding="async" style="object-position:50% 35%"><span>абнимаю катика, патом тибя</span></figure>
                 </div>
             </section>
 
             <section class="page" data-page="letter">
-                <div class="page-title">Письмо 💌</div>
-                <p class="page-sub">только для тебя</p>
+                <div class="page-title">Писмо 💌</div>
+                <p class="page-sub">тока для тибя, никаму ни паказывай</p>
                 <button class="envelope" id="envelope" type="button">
                     <div class="env-flap"></div>
                     <div class="env-seal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg></div>
-                    <div class="env-label">Нажми, чтобы открыть</div>
+                    <div class="env-label">тыкни штобы аткрыть</div>
                 </button>
                 <div class="card letter" id="letter">
-                    <p>Тут будет моё письмо тебе...</p>
+                    <p>тут будит маё писмо тибе... скора напишу, ни падглядывай</p>
                     <p class="sign">твой ❤️</p>
                 </div>
             </section>
 
             <section class="page" data-page="reasons">
-                <div class="page-title">Почему ты 💕</div>
-                <p class="page-sub">нажимай на карточки</p>
+                <div class="page-title">Пачиму имена ты 💕</div>
+                <p class="page-sub">тыкай на карточьки</p>
                 <div class="reasons" id="reasons">
-                    <div class="reason"><div class="reason-inner"><div class="reason-front">#1</div><div class="reason-back">скоро тут будет причина 💗</div></div></div>
-                    <div class="reason"><div class="reason-inner"><div class="reason-front">#2</div><div class="reason-back">скоро тут будет причина 💗</div></div></div>
-                    <div class="reason"><div class="reason-inner"><div class="reason-front">#3</div><div class="reason-back">скоро тут будет причина 💗</div></div></div>
-                    <div class="reason"><div class="reason-inner"><div class="reason-front">#4</div><div class="reason-back">скоро тут будет причина 💗</div></div></div>
-                    <div class="reason"><div class="reason-inner"><div class="reason-front">#5</div><div class="reason-back">скоро тут будет причина 💗</div></div></div>
-                    <div class="reason"><div class="reason-inner"><div class="reason-front">#6</div><div class="reason-back">скоро тут будет причина 💗</div></div></div>
+                    <div class="reason"><div class="reason-inner"><div class="reason-front">#1</div><div class="reason-back">скора тут будит причинка 💗</div></div></div>
+                    <div class="reason"><div class="reason-inner"><div class="reason-front">#2</div><div class="reason-back">скора тут будит причинка 💗</div></div></div>
+                    <div class="reason"><div class="reason-inner"><div class="reason-front">#3</div><div class="reason-back">скора тут будит причинка 💗</div></div></div>
+                    <div class="reason"><div class="reason-inner"><div class="reason-front">#4</div><div class="reason-back">скора тут будит причинка 💗</div></div></div>
+                    <div class="reason"><div class="reason-inner"><div class="reason-front">#5</div><div class="reason-back">скора тут будит причинка 💗</div></div></div>
+                    <div class="reason"><div class="reason-inner"><div class="reason-front">#6</div><div class="reason-back">скора тут будит причинка 💗</div></div></div>
                 </div>
             </section>
         </main>
 
         <nav class="tabbar" id="tabbar">
-            <button class="tab active" data-tab="home" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg><span>Главная</span></button>
-            <button class="tab" data-tab="photos" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Фото</span></button>
-            <button class="tab" data-tab="letter" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span>Письмо</span></button>
-            <button class="tab" data-tab="reasons" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M11 2l2.2 5.8L19 10l-5.8 2.2L11 18l-2.2-5.8L3 10l5.8-2.2z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg><span>Причины</span></button>
+            <button class="tab active" data-tab="home" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg><span>Главнае</span></button>
+            <button class="tab" data-tab="photos" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Фотачки</span></button>
+            <button class="tab" data-tab="letter" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span>Писмо</span></button>
+            <button class="tab" data-tab="reasons" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M11 2l2.2 5.8L19 10l-5.8 2.2L11 18l-2.2-5.8L3 10l5.8-2.2z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg><span>Причинки</span></button>
         </nav>
+    </div>
+
+    <div class="lightbox" id="lightbox">
+        <button class="lb-btn lb-close" id="lb-close" type="button" aria-label="закрыть">✕</button>
+        <button class="lb-btn lb-prev" id="lb-prev" type="button" aria-label="назад">‹</button>
+        <img id="lb-img" alt="">
+        <div class="lb-cap" id="lb-cap"></div>
+        <div class="lb-count" id="lb-count"></div>
+        <button class="lb-btn lb-next" id="lb-next" type="button" aria-label="дальше">›</button>
     </div>
 
     <script>
@@ -949,6 +1060,53 @@
             document.getElementById('reasons').addEventListener('click', function (e) {
                 var card = e.target.closest('.reason');
                 if (card) card.classList.toggle('flipped');
+            });
+
+            var photoEls = document.querySelectorAll('[data-photo]');
+            var lightbox = document.getElementById('lightbox');
+            var lbImg = document.getElementById('lb-img');
+            var lbCap = document.getElementById('lb-cap');
+            var lbCount = document.getElementById('lb-count');
+            var lbIndex = 0;
+
+            function showPhoto(i) {
+                lbIndex = (i + photoEls.length) % photoEls.length;
+                var el = photoEls[lbIndex];
+                lbImg.src = el.querySelector('img').getAttribute('src');
+                lbCap.textContent = el.querySelector('span').textContent;
+                lbCount.textContent = (lbIndex + 1) + ' / ' + photoEls.length;
+            }
+
+            for (var k = 0; k < photoEls.length; k++) {
+                (function (idx) {
+                    photoEls[idx].addEventListener('click', function () {
+                        showPhoto(idx);
+                        lightbox.classList.add('show');
+                    });
+                })(k);
+            }
+
+            function closeLightbox() { lightbox.classList.remove('show'); }
+
+            document.getElementById('lb-close').addEventListener('click', closeLightbox);
+            document.getElementById('lb-prev').addEventListener('click', function (e) { e.stopPropagation(); showPhoto(lbIndex - 1); });
+            document.getElementById('lb-next').addEventListener('click', function (e) { e.stopPropagation(); showPhoto(lbIndex + 1); });
+            lightbox.addEventListener('click', function (e) { if (e.target === lightbox) closeLightbox(); });
+
+            var touchX = null;
+            lightbox.addEventListener('touchstart', function (e) { touchX = e.touches[0].clientX; }, { passive: true });
+            lightbox.addEventListener('touchend', function (e) {
+                if (touchX === null) return;
+                var dx = e.changedTouches[0].clientX - touchX;
+                touchX = null;
+                if (Math.abs(dx) > 50) showPhoto(lbIndex + (dx < 0 ? 1 : -1));
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (!lightbox.classList.contains('show')) return;
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowLeft') showPhoto(lbIndex - 1);
+                if (e.key === 'ArrowRight') showPhoto(lbIndex + 1);
             });
 
             document.getElementById('btn-retry').addEventListener('click', retry);
