@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>💖</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Nunito:wght@700;800;900&display=swap');
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -25,12 +25,12 @@
             position: fixed;
             inset: 0;
             z-index: 1000;
-            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             transition: opacity 0.8s, transform 0.8s;
+            overflow: hidden;
         }
 
         #pin-screen.unlocked {
@@ -39,110 +39,238 @@
             pointer-events: none;
         }
 
+        /* Plaid background */
+        .plaid-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            background-color: #f4b8c1;
+            background-image:
+                repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px),
+                repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px),
+                repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(200,80,100,0.08) 80px, rgba(200,80,100,0.08) 120px),
+                repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(200,80,100,0.08) 80px, rgba(200,80,100,0.08) 120px),
+                repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(255,200,210,0.3) 20px, rgba(255,200,210,0.3) 22px),
+                repeating-linear-gradient(90deg, transparent, transparent 20px, rgba(255,200,210,0.3) 20px, rgba(255,200,210,0.3) 22px);
+        }
+
+        /* Floating hearts on pin screen */
+        .pin-floating-heart {
+            position: absolute;
+            font-size: 24px;
+            opacity: 0;
+            animation: floatHeart 6s ease-in-out infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes floatHeart {
+            0% { opacity: 0; transform: translateY(20px) scale(0.7); }
+            20% { opacity: 0.5; }
+            50% { opacity: 0.3; transform: translateY(-30px) scale(1); }
+            80% { opacity: 0.5; }
+            100% { opacity: 0; transform: translateY(20px) scale(0.7); }
+        }
+
+        .pin-content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         .pin-title {
-            color: #ff69b4;
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
+            font-family: 'Nunito', sans-serif;
+            color: #8b1a3a;
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            text-shadow: 1px 1px 0 rgba(255,255,255,0.4);
         }
 
-        .pin-heart {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.15); }
-        }
-
+        /* Heart dots */
         .pin-dots {
             display: flex;
-            gap: 16px;
-            margin-bottom: 2rem;
+            gap: 10px;
+            margin-bottom: 0.6rem;
         }
 
-        .pin-dot {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 105, 180, 0.5);
-            background: transparent;
-            transition: all 0.2s;
+        .pin-dot-box {
+            width: 48px;
+            height: 48px;
+            background: #fff;
+            border-radius: 10px;
+            border: 2.5px solid #e8a0b0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.25s;
+            box-shadow: 2px 3px 0 rgba(180,80,100,0.15);
         }
 
-        .pin-dot.filled {
-            background: #ff69b4;
-            border-color: #ff69b4;
-            box-shadow: 0 0 10px rgba(255, 105, 180, 0.6);
+        .pin-dot-box .heart-empty {
+            color: #f0c0d0;
         }
 
-        .pin-dot.error {
-            border-color: #ff4444;
-            background: #ff4444;
+        .pin-dot-box.filled {
+            background: #ffe0ea;
+            border-color: #d4687a;
+        }
+
+        .pin-dot-box.filled .heart-empty { display: none; }
+        .pin-dot-box .heart-full { display: none; color: #d4405a; }
+        .pin-dot-box.filled .heart-full { display: block; }
+
+        .pin-dot-box.error {
+            border-color: #cc3344;
+            background: #ffe0e0;
             animation: shake 0.4s;
         }
 
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            20% { transform: translateX(-8px); }
-            40% { transform: translateX(8px); }
-            60% { transform: translateX(-6px); }
-            80% { transform: translateX(6px); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
         }
 
+        .pin-hint {
+            color: #8b3a5a;
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        /* Keypad */
         .pin-keypad {
+            background: #fff;
+            border-radius: 20px;
+            padding: 16px;
             display: grid;
-            grid-template-columns: repeat(3, 72px);
-            gap: 14px;
+            grid-template-columns: repeat(3, 64px);
+            gap: 10px;
+            box-shadow: 3px 5px 0 rgba(180,80,100,0.15);
+            border: 2px solid #e8c0cc;
         }
 
         .pin-key {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            border: 1.5px solid rgba(255, 105, 180, 0.3);
-            background: rgba(255, 105, 180, 0.08);
+            width: 64px;
+            height: 56px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #e8808a, #c85a6a);
+            border: none;
+            border-bottom: 3px solid #a04050;
             color: #fff;
-            font-size: 1.6rem;
-            font-family: 'Comfortaa', sans-serif;
+            font-size: 1.5rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.15s;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
+            transition: transform 0.1s;
         }
 
         .pin-key:active {
-            background: rgba(255, 105, 180, 0.3);
-            border-color: #ff69b4;
-            transform: scale(0.93);
+            transform: translateY(2px);
+            border-bottom-width: 1px;
         }
 
-        .pin-key.empty {
+        .pin-key.empty-key {
             visibility: hidden;
         }
 
-        .pin-key.backspace {
-            font-size: 1.2rem;
-        }
-
-        .pin-hint {
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 0.75rem;
-            margin-top: 1.5rem;
+        .pin-key.del-key {
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 1px;
         }
 
         .pin-error-msg {
-            color: #ff6b8a;
-            font-size: 0.85rem;
-            margin-top: 0.8rem;
-            height: 1.2rem;
-            transition: opacity 0.3s;
+            height: 1rem;
+        }
+
+        /* ===== POPUP OVERLAY ===== */
+        .popup-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: rgba(180, 50, 70, 0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .popup-overlay.show {
+            display: flex;
+        }
+
+        .popup-box {
+            background: #fff;
+            border-radius: 24px;
+            padding: 2rem 2.5rem;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 300px;
+            animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .popup-pusheen {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1rem;
+        }
+
+        .popup-title {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .popup-title.error { color: #cc3344; }
+        .popup-title.success { color: #d4405a; }
+
+        .popup-subtitle {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .popup-btn {
+            background: linear-gradient(180deg, #d4506a, #b03050);
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 36px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            border-bottom: 3px solid #8a2040;
+            transition: transform 0.1s;
+        }
+
+        .popup-btn:active {
+            transform: translateY(2px);
+            border-bottom-width: 1px;
+        }
+
+        .popup-hearts {
+            position: absolute;
+            font-size: 18px;
+            opacity: 0.3;
         }
 
         /* ===== MAIN CONTENT ===== */
@@ -202,11 +330,11 @@
             z-index: 2;
         }
 
-        .glow-1 { top: 10%; left: 20%; animation: float 8s ease-in-out infinite; }
-        .glow-2 { top: 60%; right: 15%; animation: float 10s ease-in-out infinite reverse; }
-        .glow-3 { bottom: 10%; left: 50%; animation: float 12s ease-in-out infinite; }
+        .glow-1 { top: 10%; left: 20%; animation: gfloat 8s ease-in-out infinite; }
+        .glow-2 { top: 60%; right: 15%; animation: gfloat 10s ease-in-out infinite reverse; }
+        .glow-3 { bottom: 10%; left: 50%; animation: gfloat 12s ease-in-out infinite; }
 
-        @keyframes float {
+        @keyframes gfloat {
             0%, 100% { transform: translate(0, 0); }
             25% { transform: translate(30px, -20px); }
             50% { transform: translate(-20px, 30px); }
@@ -216,8 +344,10 @@
         @media (max-width: 600px) {
             h1 { font-size: 1.8rem; }
             p { font-size: 1rem; }
-            .pin-key { width: 64px; height: 64px; font-size: 1.4rem; }
-            .pin-keypad { grid-template-columns: repeat(3, 64px); gap: 12px; }
+            .pin-title { font-size: 1.5rem; }
+            .pin-dot-box { width: 42px; height: 42px; font-size: 20px; }
+            .pin-key { width: 58px; height: 50px; font-size: 1.3rem; }
+            .pin-keypad { grid-template-columns: repeat(3, 58px); gap: 8px; padding: 12px; }
         }
     </style>
 </head>
@@ -225,30 +355,54 @@
 
     <!-- PIN SCREEN -->
     <div id="pin-screen">
-        <div class="pin-heart">💗</div>
-        <div class="pin-title">Введи пин-код</div>
-        <div class="pin-dots" id="pin-dots">
-            <div class="pin-dot"></div>
-            <div class="pin-dot"></div>
-            <div class="pin-dot"></div>
-            <div class="pin-dot"></div>
+        <div class="plaid-bg"></div>
+
+        <div class="pin-content">
+            <div class="pin-title">Enter Code</div>
+            <div class="pin-dots" id="pin-dots">
+                <div class="pin-dot-box"><span class="heart-empty">♡</span><span class="heart-full">♥</span></div>
+                <div class="pin-dot-box"><span class="heart-empty">♡</span><span class="heart-full">♥</span></div>
+                <div class="pin-dot-box"><span class="heart-empty">♡</span><span class="heart-full">♥</span></div>
+                <div class="pin-dot-box"><span class="heart-empty">♡</span><span class="heart-full">♥</span></div>
+            </div>
+            <div class="pin-hint">Hint: The day you finally said "YES" to me.</div>
+            <div class="pin-keypad" id="pin-keypad">
+                <div class="pin-key" data-num="1">1</div>
+                <div class="pin-key" data-num="2">2</div>
+                <div class="pin-key" data-num="3">3</div>
+                <div class="pin-key" data-num="4">4</div>
+                <div class="pin-key" data-num="5">5</div>
+                <div class="pin-key" data-num="6">6</div>
+                <div class="pin-key" data-num="7">7</div>
+                <div class="pin-key" data-num="8">8</div>
+                <div class="pin-key" data-num="9">9</div>
+                <div class="pin-key empty-key"></div>
+                <div class="pin-key" data-num="0">0</div>
+                <div class="pin-key del-key" id="pin-back">DEL</div>
+            </div>
         </div>
-        <div class="pin-error-msg" id="pin-error">&nbsp;</div>
-        <div class="pin-keypad" id="pin-keypad">
-            <div class="pin-key" data-num="1">1</div>
-            <div class="pin-key" data-num="2">2</div>
-            <div class="pin-key" data-num="3">3</div>
-            <div class="pin-key" data-num="4">4</div>
-            <div class="pin-key" data-num="5">5</div>
-            <div class="pin-key" data-num="6">6</div>
-            <div class="pin-key" data-num="7">7</div>
-            <div class="pin-key" data-num="8">8</div>
-            <div class="pin-key" data-num="9">9</div>
-            <div class="pin-key empty"></div>
-            <div class="pin-key" data-num="0">0</div>
-            <div class="pin-key backspace" id="pin-back">⌫</div>
+    </div>
+
+    <!-- WRONG PIN POPUP -->
+    <div class="popup-overlay" id="popup-wrong">
+        <div class="popup-box">
+            <div class="popup-pusheen" id="pusheen-sad"></div>
+            <div class="popup-title error">Wrong Passcode!</div>
+            <div class="popup-subtitle">Try Again?</div>
+            <button class="popup-btn" id="btn-retry">Retry</button>
         </div>
-        <div class="pin-hint">только для тебя 💕</div>
+    </div>
+
+    <!-- CORRECT PIN POPUP -->
+    <div class="popup-overlay" id="popup-correct">
+        <div class="popup-box">
+            <span class="popup-hearts" style="top:10px;left:20px;">💕</span>
+            <span class="popup-hearts" style="bottom:15px;right:25px;">💗</span>
+            <div class="popup-pusheen" id="pusheen-happy"></div>
+            <div class="popup-title success">Access Granted!</div>
+            <div class="popup-subtitle">Congrats you passed! 💖</div>
+            <button class="popup-btn" id="btn-proceed">Proceed</button>
+        </div>
     </div>
 
     <!-- MAIN SITE -->
@@ -263,11 +417,104 @@
 
     <script>
         (function() {
+            // Draw Pusheen SVGs
+            var sadPusheen = '<svg viewBox="0 0 200 200" width="120" height="120" xmlns="http://www.w3.org/2000/svg">'
+                + '<ellipse cx="100" cy="140" rx="65" ry="45" fill="#B0A090"/>'
+                + '<ellipse cx="100" cy="135" rx="62" ry="42" fill="#C4B6A6"/>'
+                // ears
+                + '<polygon points="55,105 45,75 72,95" fill="#C4B6A6" stroke="#8a7a6a" stroke-width="1.5"/>'
+                + '<polygon points="145,105 155,75 128,95" fill="#C4B6A6" stroke="#8a7a6a" stroke-width="1.5"/>'
+                // stripes
+                + '<path d="M75,115 Q78,108 82,115" stroke="#a09080" stroke-width="2" fill="none"/>'
+                + '<path d="M85,110 Q88,103 92,110" stroke="#a09080" stroke-width="2" fill="none"/>'
+                + '<path d="M108,110 Q111,103 115,110" stroke="#a09080" stroke-width="2" fill="none"/>'
+                + '<path d="M118,115 Q121,108 125,115" stroke="#a09080" stroke-width="2" fill="none"/>'
+                // eyes (sad, looking down)
+                + '<ellipse cx="82" cy="132" rx="5" ry="6" fill="#3a3a3a"/>'
+                + '<ellipse cx="118" cy="132" rx="5" ry="6" fill="#3a3a3a"/>'
+                // tears
+                + '<ellipse cx="76" cy="140" rx="3" ry="5" fill="#7ac4e8" opacity="0.7"/>'
+                + '<ellipse cx="124" cy="140" rx="3" ry="5" fill="#7ac4e8" opacity="0.7"/>'
+                + '<ellipse cx="74" cy="148" rx="2" ry="3" fill="#7ac4e8" opacity="0.5"/>'
+                + '<ellipse cx="126" cy="148" rx="2" ry="3" fill="#7ac4e8" opacity="0.5"/>'
+                // mouth (sad)
+                + '<path d="M93,148 Q100,142 107,148" stroke="#6a5a4a" stroke-width="2" fill="none" stroke-linecap="round"/>'
+                // blush
+                + '<ellipse cx="72" cy="143" rx="8" ry="5" fill="#e8a0a0" opacity="0.4"/>'
+                + '<ellipse cx="128" cy="143" rx="8" ry="5" fill="#e8a0a0" opacity="0.4"/>'
+                // paws
+                + '<ellipse cx="70" cy="170" rx="12" ry="8" fill="#B8A898"/>'
+                + '<ellipse cx="130" cy="170" rx="12" ry="8" fill="#B8A898"/>'
+                // tail
+                + '<path d="M160,145 Q175,130 170,155 Q168,165 160,160" stroke="#B0A090" stroke-width="6" fill="none" stroke-linecap="round"/>'
+                + '</svg>';
+
+            var happyPusheen = '<svg viewBox="0 0 200 200" width="120" height="120" xmlns="http://www.w3.org/2000/svg">'
+                + '<ellipse cx="100" cy="140" rx="65" ry="45" fill="#B0A090"/>'
+                + '<ellipse cx="100" cy="135" rx="62" ry="42" fill="#C4B6A6"/>'
+                // ears
+                + '<polygon points="55,105 45,75 72,95" fill="#C4B6A6" stroke="#8a7a6a" stroke-width="1.5"/>'
+                + '<polygon points="145,105 155,75 128,95" fill="#C4B6A6" stroke="#8a7a6a" stroke-width="1.5"/>'
+                // stripes
+                + '<path d="M75,115 Q78,108 82,115" stroke="#a09080" stroke-width="2" fill="none"/>'
+                + '<path d="M85,110 Q88,103 92,110" stroke="#a09080" stroke-width="2" fill="none"/>'
+                + '<path d="M108,110 Q111,103 115,110" stroke="#a09080" stroke-width="2" fill="none"/>'
+                + '<path d="M118,115 Q121,108 125,115" stroke="#a09080" stroke-width="2" fill="none"/>'
+                // eyes (happy, sparkly)
+                + '<circle cx="82" cy="130" r="5" fill="#3a3a3a"/>'
+                + '<circle cx="118" cy="130" r="5" fill="#3a3a3a"/>'
+                + '<circle cx="84" cy="128" r="2" fill="#fff"/>'
+                + '<circle cx="120" cy="128" r="2" fill="#fff"/>'
+                // mouth (happy, open smile)
+                + '<path d="M90,145 Q100,155 110,145" stroke="#6a5a4a" stroke-width="2" fill="none" stroke-linecap="round"/>'
+                + '<path d="M93,145 Q100,152 107,145" fill="#e07080" opacity="0.5"/>'
+                // blush
+                + '<ellipse cx="72" cy="140" rx="9" ry="5" fill="#e8a0a0" opacity="0.5"/>'
+                + '<ellipse cx="128" cy="140" rx="9" ry="5" fill="#e8a0a0" opacity="0.5"/>'
+                // sparkles
+                + '<text x="55" y="115" font-size="14" fill="#ffcc00">✦</text>'
+                + '<text x="140" y="110" font-size="10" fill="#ffcc00">✦</text>'
+                // paws up
+                + '<ellipse cx="65" cy="162" rx="12" ry="8" fill="#B8A898" transform="rotate(-15,65,162)"/>'
+                + '<ellipse cx="135" cy="162" rx="12" ry="8" fill="#B8A898" transform="rotate(15,135,162)"/>'
+                // tail (happy, up)
+                + '<path d="M160,140 Q180,115 172,145 Q168,158 160,155" stroke="#B0A090" stroke-width="6" fill="none" stroke-linecap="round"/>'
+                // heart above
+                + '<text x="92" y="85" font-size="22" fill="#e06080">♥</text>'
+                + '</svg>';
+
+            document.getElementById('pusheen-sad').innerHTML = sadPusheen;
+            document.getElementById('pusheen-happy').innerHTML = happyPusheen;
+
+            // Floating hearts on pin screen
+            var pinScreen = document.getElementById('pin-screen');
+            var floatingPositions = [
+                {left:'8%',top:'15%',delay:0}, {left:'85%',top:'20%',delay:1.5},
+                {left:'15%',top:'70%',delay:3}, {left:'78%',top:'75%',delay:2},
+                {left:'50%',top:'8%',delay:4}, {left:'30%',top:'85%',delay:1},
+                {left:'65%',top:'12%',delay:2.5}, {left:'90%',top:'55%',delay:3.5},
+                {left:'5%',top:'45%',delay:0.8}, {left:'70%',top:'88%',delay:4.5}
+            ];
+            var heartChars = ['♥','♡','💕','💗'];
+            floatingPositions.forEach(function(pos) {
+                var el = document.createElement('div');
+                el.className = 'pin-floating-heart';
+                el.textContent = heartChars[Math.floor(Math.random() * heartChars.length)];
+                el.style.left = pos.left;
+                el.style.top = pos.top;
+                el.style.animationDelay = pos.delay + 's';
+                el.style.animationDuration = (5 + Math.random() * 4) + 's';
+                el.style.fontSize = (16 + Math.random() * 16) + 'px';
+                el.style.color = '#d4607a';
+                pinScreen.appendChild(el);
+            });
+
+            // Pin logic
             var correctPin = '1909';
             var entered = '';
-            var dots = document.querySelectorAll('.pin-dot');
-            var pinScreen = document.getElementById('pin-screen');
-            var pinError = document.getElementById('pin-error');
+            var dots = document.querySelectorAll('.pin-dot-box');
+            var popupWrong = document.getElementById('popup-wrong');
+            var popupCorrect = document.getElementById('popup-correct');
             var heartsStarted = false;
 
             document.getElementById('pin-keypad').addEventListener('click', function(e) {
@@ -278,7 +525,6 @@
                     if (entered.length > 0) {
                         entered = entered.slice(0, -1);
                         updateDots();
-                        pinError.innerHTML = '&nbsp;';
                     }
                     return;
                 }
@@ -286,46 +532,54 @@
                 entered += num;
                 updateDots();
                 if (entered.length === 4) {
-                    setTimeout(checkPin, 200);
+                    setTimeout(checkPin, 300);
                 }
             });
 
             document.addEventListener('keydown', function(e) {
                 if (pinScreen.classList.contains('unlocked')) return;
+                if (popupWrong.classList.contains('show') || popupCorrect.classList.contains('show')) return;
                 if (e.key >= '0' && e.key <= '9' && entered.length < 4) {
                     entered += e.key;
                     updateDots();
-                    if (entered.length === 4) setTimeout(checkPin, 200);
+                    if (entered.length === 4) setTimeout(checkPin, 300);
                 } else if (e.key === 'Backspace' && entered.length > 0) {
                     entered = entered.slice(0, -1);
                     updateDots();
-                    pinError.innerHTML = '&nbsp;';
                 }
             });
 
             function updateDots() {
                 for (var i = 0; i < 4; i++) {
-                    dots[i].className = 'pin-dot' + (i < entered.length ? ' filled' : '');
+                    dots[i].className = 'pin-dot-box' + (i < entered.length ? ' filled' : '');
                 }
             }
 
             function checkPin() {
                 if (entered === correctPin) {
-                    pinScreen.classList.add('unlocked');
-                    setTimeout(function() { pinScreen.style.display = 'none'; }, 900);
-                    if (!heartsStarted) { startHearts(); heartsStarted = true; }
+                    popupCorrect.classList.add('show');
                 } else {
                     for (var i = 0; i < 4; i++) dots[i].classList.add('error');
-                    pinError.textContent = 'Неправильный пин 💔';
                     setTimeout(function() {
-                        entered = '';
-                        updateDots();
-                        for (var i = 0; i < 4; i++) dots[i].classList.remove('error');
-                    }, 600);
+                        popupWrong.classList.add('show');
+                    }, 400);
                 }
             }
 
-            // Hearts
+            document.getElementById('btn-retry').addEventListener('click', function() {
+                popupWrong.classList.remove('show');
+                entered = '';
+                updateDots();
+            });
+
+            document.getElementById('btn-proceed').addEventListener('click', function() {
+                popupCorrect.classList.remove('show');
+                pinScreen.classList.add('unlocked');
+                setTimeout(function() { pinScreen.style.display = 'none'; }, 900);
+                if (!heartsStarted) { startHearts(); heartsStarted = true; }
+            });
+
+            // Hearts on main page
             var heartsContainer = document.getElementById('hearts');
             var heartSymbols = ['\u{1F497}', '\u{1F495}', '\u{1F493}'];
             var pinkColors = ['#ff69b4', '#ff1493', '#db7093', '#ffb6c1', '#ff85a2', '#ffc0cb', '#f8a4c8', '#e791b8'];
