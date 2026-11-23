@@ -394,7 +394,7 @@
             </svg>
             <div class="pin-title">Введи код</div>
             <div class="pin-boxes" id="pin-boxes"></div>
-            <div class="pin-hint" id="pin-hint">Подсказка: день, когда ты сказала мне «да» 💕</div>
+            <div class="pin-hint" id="pin-hint">Какая та дата связанная с нами, бебебе</div>
             <div class="pin-keypad" id="pin-keypad">
                 <div class="pin-key" data-num="1">1</div>
                 <div class="pin-key" data-num="2">2</div>
@@ -414,19 +414,19 @@
 
     <div class="overlay" id="popup-wrong">
         <div class="popup wobble">
-            <h2>Неверный код!</h2>
+            <h2>Неверна!</h2>
             <img class="kitty sad" src="sad.png" alt="">
-            <p id="wrong-text">Котик грустит... попробуешь ещё?</p>
-            <button class="popup-btn" id="btn-retry">Ещё раз</button>
+            <p id="wrong-text">Я буду очен грусным есле низнаеш када мы начале встричаца!((</p>
+            <button class="popup-btn" id="btn-retry">ищьо раз</button>
         </div>
     </div>
 
     <div class="overlay" id="popup-right">
         <div class="popup" id="popup-right-box">
-            <h2>Доступ открыт!</h2>
+            <h2>Доступ аткрыт тебе</h2>
             <img class="kitty happy" src="love.png" alt="">
-            <p>Ты справилась, моя хорошая 💖</p>
-            <button class="popup-btn" id="btn-enter">Войти</button>
+            <p>Ты справилась, мая люпимасть</p>
+            <button class="popup-btn" id="btn-enter">Вайти</button>
         </div>
     </div>
 
@@ -489,12 +489,7 @@
                 render();
             }
 
-            var wrongLines = [
-                'Котик грустит... попробуешь ещё?',
-                'Ой-ой, не то 🥺 давай ещё разок',
-                'Вспоминай, это важный день 💭',
-                'Почти! Котик верит в тебя 💗'
-            ];
+            var wrongLines = ['Я буду очен грусным есле низнаеш када мы начале встричаца!(('];
 
             var lock = document.getElementById('lock');
             var hint = document.getElementById('pin-hint');
