@@ -542,12 +542,14 @@
         .game-start-heart { color: var(--rose); }
         .game-start-heart svg { width: 72px; height: 72px; animation: sealPulse 1.6s ease-in-out infinite; }
 
-        .game-area.playing .game-start { display: none; }
+        .game-area.playing .game-start,
+        .game-area.won .game-start,
+        .game-area.lost .game-start { display: none; }
 
-        .game-win { display: none; background: rgba(255, 250, 247, 0.94); }
+        .game-win { display: none; background: #fffaf7; }
         .game-area.won .game-win { display: flex; animation: pageIn 0.45s ease; }
 
-        .game-lose { display: none; background: rgba(255, 240, 244, 0.95); }
+        .game-lose { display: none; background: #fff0f4; }
         .game-area.lost .game-lose { display: flex; animation: pageIn 0.45s ease; }
         .lose-img { width: 130px; height: auto; mix-blend-mode: multiply; }
 
