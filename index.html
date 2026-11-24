@@ -1115,6 +1115,99 @@
     <script>
         (function () {
             var CODE = '1909';
+
+            var AC = window.AudioContext || window.webkitAudioContext;
+            var actx = null;
+            var noiseBuf = null;
+            if (navigator.audioSession) { try { navigator.audioSession.type = 'playback'; } catch (err) {} }
+
+            function ac() {
+                if (!AC) return null;
+                if (!actx) actx = new AC();
+                if (actx.state === 'suspended') actx.resume();
+                return actx;
+            }
+
+            document.addEventListener('pointerdown', ac, { capture: true, passive: true });
+            document.addEventListener('keydown', ac, { capture: true });
+
+            function tone(freq, dur, type, vol, when, slideTo) {
+                var c = ac();
+                if (!c) return;
+                var t = c.currentTime + (when || 0);
+                var o = c.createOscillator();
+                var g = c.createGain();
+                o.type = type || 'sine';
+                o.frequency.setValueAtTime(freq, t);
+                if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
+                g.gain.setValueAtTime(0.0001, t);
+                g.gain.exponentialRampToValueAtTime(vol || 0.12, t + 0.012);
+                g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+                o.connect(g);
+                g.connect(c.destination);
+                o.start(t);
+                o.stop(t + dur + 0.03);
+            }
+
+            function noise(dur, vol, when, freq) {
+                var c = ac();
+                if (!c) return;
+                if (!noiseBuf) {
+                    noiseBuf = c.createBuffer(1, c.sampleRate * 0.5, c.sampleRate);
+                    var d = noiseBuf.getChannelData(0);
+                    for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+                }
+                var t = c.currentTime + (when || 0);
+                var src = c.createBufferSource();
+                var f = c.createBiquadFilter();
+                var g = c.createGain();
+                src.buffer = noiseBuf;
+                f.type = 'bandpass';
+                f.frequency.value = freq || 1500;
+                g.gain.setValueAtTime(0.0001, t);
+                g.gain.exponentialRampToValueAtTime(vol || 0.08, t + 0.02);
+                g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+                src.connect(f);
+                f.connect(g);
+                g.connect(c.destination);
+                src.start(t);
+                src.stop(t + dur + 0.03);
+            }
+
+            function seq(freqs, step, dur, type, vol) {
+                for (var i = 0; i < freqs.length; i++) tone(freqs[i], dur, type, vol, i * step);
+            }
+
+            var SFX = {
+                key: function () { tone(640 + Math.random() * 80, 0.08, 'triangle', 0.12); },
+                del: function () { tone(330, 0.08, 'triangle', 0.1, 0, 260); },
+                wrong: function () { tone(392, 0.18, 'square', 0.05); tone(294, 0.32, 'square', 0.05, 0.17); },
+                right: function () { seq([523, 659, 784, 1047], 0.08, 0.24, 'triangle', 0.12); },
+                button: function () { tone(880, 0.1, 'sine', 0.12); tone(1320, 0.14, 'sine', 0.08, 0.06); },
+                tab: function () { tone(520, 0.08, 'sine', 0.1, 0, 760); },
+                photo: function () { tone(600, 0.14, 'sine', 0.1, 0, 980); },
+                close: function () { tone(700, 0.1, 'sine', 0.08, 0, 420); },
+                open: function () { noise(0.2, 0.07, 0, 1200); seq([784, 988, 1175, 1568], 0.07, 0.3, 'sine', 0.08); },
+                flip: function () { noise(0.13, 0.08, 0, 2600); tone(700, 0.1, 'sine', 0.06, 0.05, 1100); },
+                phrase: function () { var b = 560 + Math.random() * 320; tone(b, 0.1, 'sine', 0.12); tone(b * 1.5, 0.14, 'sine', 0.09, 0.07); },
+                start: function () { seq([440, 554, 659, 880], 0.07, 0.16, 'sine', 0.1); },
+                catchH: function (n) { var f = 480 + n * 22; tone(f, 0.1, 'triangle', 0.12, 0, f * 1.6); },
+                miss: function () { tone(220, 0.22, 'sine', 0.16, 0, 110); },
+                lose: function () { seq([523, 466, 415, 349], 0.18, 0.32, 'triangle', 0.1); },
+                win: function () { seq([523, 659, 784, 1047, 784, 1047, 1319], 0.09, 0.26, 'triangle', 0.11); }
+            };
+
+            document.addEventListener('click', function (e) {
+                var t = e.target;
+                if (t.closest('#btn-retry, #btn-enter')) SFX.button();
+                else if (t.closest('#pin-heart, #tap-btn')) SFX.phrase();
+                else if (t.closest('.tab')) SFX.tab();
+                else if (t.closest('#lb-next, #lb-prev')) SFX.tab();
+                else if (t.closest('#lb-close')) SFX.close();
+                else if (t.closest('[data-photo]')) SFX.photo();
+                else if (t.closest('.reason')) SFX.flip();
+                else if (t.closest('#envelope')) SFX.open();
+            }, true);
             var HEART_PATH = 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z';
             var EMPTY_HEART = '<svg viewBox="0 0 24 24"><path d="' + HEART_PATH + '" fill="#f7c6cf"/></svg>';
 
@@ -1149,6 +1242,7 @@
             function press(num) {
                 if (busy || entered.length >= 4) return;
                 entered += num;
+                SFX.key();
                 render();
                 if (entered.length === 4) {
                     busy = true;
@@ -1159,6 +1253,7 @@
             function del() {
                 if (busy || !entered.length) return;
                 entered = entered.slice(0, -1);
+                SFX.del();
                 render();
             }
 
@@ -1176,6 +1271,7 @@
             function check() {
                 if (entered === CODE) {
                     lock.classList.add('open');
+                    SFX.right();
                     setTimeout(function () {
                         popupRight.classList.add('show');
                         burstHearts();
@@ -1183,6 +1279,7 @@
                 } else {
                     attempts++;
                     replay(lock, 'shake');
+                    SFX.wrong();
                     for (var i = 0; i < 4; i++) boxes[i].classList.add('error');
                     wrongText.textContent = wrongLines[(attempts - 1) % wrongLines.length];
                     setTimeout(function () { popupWrong.classList.add('show'); }, 450);
@@ -1413,6 +1510,7 @@
                     if (idx >= 0) gHearts.splice(idx, 1);
                 }, 360);
                 gScore++;
+                SFX.catchH(gScore);
                 gHud();
                 if (gScore >= GOAL) gWin();
             }
@@ -1437,6 +1535,7 @@
                         gHearts.splice(i, 1);
                         if (!h.black) {
                             gMisses++;
+                            SFX.miss();
                             gHud();
                             if (gMisses >= LIVES) { gLose('miss'); return; }
                         }
@@ -1452,6 +1551,7 @@
                 gHud();
                 gameArea.classList.remove('won', 'lost');
                 gameArea.classList.add('playing');
+                SFX.start();
                 gRunning = true;
                 gSpawnAcc = 1;
                 gLast = performance.now();
@@ -1472,6 +1572,7 @@
                 gClear();
                 gameArea.classList.remove('playing');
                 gameArea.classList.add('won');
+                SFX.win();
                 for (var i = 0; i < 18; i++) {
                     var b = document.createElement('div');
                     b.className = 'burst';
@@ -1494,6 +1595,7 @@
                 gClear();
                 gameArea.classList.remove('playing');
                 gameArea.classList.add('lost');
+                SFX.lose();
                 loseText.textContent = reason === 'black'
                     ? 'ой, эта была чорнае сердечко, ево нильзя трогать. давай ищьо раз, я верю в тибя'
                     : 'ты прапустила 3 сердечка, ани грусныи улетели. давай ищьо раз, я верю в тибя';
