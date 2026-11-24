@@ -410,6 +410,23 @@
             margin-bottom: 0.4rem;
         }
 
+        .tap-card { text-align: center; padding: 1.3rem 1rem 1.2rem; }
+
+        .tap-phrase {
+            font-family: 'Caveat', cursive;
+            font-weight: 700;
+            font-size: 1.7rem;
+            line-height: 1.15;
+            color: var(--rose-dark);
+            min-height: 2.4em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.9rem;
+        }
+
+        .tap-phrase.pop { animation: pop 0.35s ease; }
+
         /* photos */
         .photos {
             display: grid;
@@ -854,10 +871,11 @@
                 </div>
                 <div class="card">
                     <h3>Превет, люпимасть</h3>
-                    <p class="muted">тут скора будит коешто асобинае...</p>
+                    <p>если ты эта читаеш, значит ты угадала кодик. умничька. этат сайт я сделал тока для тибя, патыкай фкладачки внизу, там многа всиво</p>
                 </div>
-                <div class="card">
-                    <p>листай фкладачки внизу 👇 ну листай листай</p>
+                <div class="card tap-card">
+                    <div class="tap-phrase" id="tap-phrase">тыкни на кнопачку</div>
+                    <button class="popup-btn tap-btn" id="tap-btn" type="button">тыкни сюда</button>
                 </div>
             </section>
 
@@ -1137,6 +1155,18 @@
                 if (e.key === 'Escape') closeLightbox();
                 if (e.key === 'ArrowLeft') showPhoto(lbIndex - 1);
                 if (e.key === 'ArrowRight') showPhoto(lbIndex + 1);
+            });
+
+            var PHRASES = ["ты сиводня самая красивая", "я па тибе ужэ скучаю", "абнимашка атправлена", "ни забудь пакушать, мая люпимасть", "ты лутшэ всех, правда правда", "я тибя ооочень сильна люплю", "цмок в щочку", "ищьо адна абнимашка, тибе многа нада", "ты мая самая любимая", "улыбнись, тибе очень идёт", "я думаю пра тибя прям щас", "хочу гулять с табой, пашли гулять", "ты самая милая на свети", "ни грусти, я рядом всигда", "тыкнула ищьо раз, значит тоже миня люпиш"];
+            var tapPhrase = document.getElementById('tap-phrase');
+            var lastPhrase = -1;
+
+            document.getElementById('tap-btn').addEventListener('click', function () {
+                var i;
+                do { i = Math.floor(Math.random() * PHRASES.length); } while (i === lastPhrase);
+                lastPhrase = i;
+                tapPhrase.textContent = PHRASES[i];
+                replay(tapPhrase, 'pop');
             });
 
             document.getElementById('btn-retry').addEventListener('click', retry);
